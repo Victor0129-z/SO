@@ -1,13 +1,25 @@
 from tkinter import *
 import tkinter.scrolledtext as scrolledtext
-from tkinter import filedialog
 import os
 import time
 
+
+contenidos=os.listdir(pathCarpeta)
+for elemento in contenidos:
+    try:
+        print(f"Copiando {elemento} --> {pathCarpeta2} ... ", end="")
+        src = os.path.join(pathCarpeta, elemento) # origen
+        dst = os.path.join(pathCarpeta2, elemento) # destino
+        shutil.copy(src, dst)
+        print("Correcto")
+    except:
+        print("Falló")
+        print("Error, no se pudo copiar el archivo. Verifique los permisos de escritura")
+        
+
 def browseFiles():
     file = open("archivoTerminado.txt", "w")
-    
-    with os.scandir(ruta_Carpeta) as ficheros:
+    with os.scandir('/Users/Victor/Documents/Python/Archivos') as ficheros:
         for fichero in ficheros:
             with open(fichero,"r") as archivo:
                 for linea in archivo:
@@ -44,12 +56,7 @@ def browseFiles():
             file.close()
             archivo.close()
         time.sleep(5)
-
-def buscadorCarpetas():
-    """ruta_Carpeta = '/Users/Victor/Documents/Python/Archivos' """
-    global ruta_Carpeta
-    ruta_Carpeta = filedialog.askdirectory(initialdir = "/",
-                                            title = "Select a File")
+    
 
 window = Tk()
 window.title('File Explorer')
@@ -69,10 +76,6 @@ button_exit = Button(window,
                      text = "Salir",
                      command = exit)
 
-button_busqueda = Button(window,
-                     text = "Seleccionar carpeta",
-                     command = buscadorCarpetas)
-
 Output = scrolledtext.ScrolledText(window, height = 6,
                                     width = 90,
                                     bg = "light cyan")
@@ -85,6 +88,5 @@ label_file_explorer.grid(column = 1, row = 1)
 button_explore.grid(column = 1, row = 2)
 button_exit.grid(column = 1,row = 3)
 Output.grid(column=1, row=4)
-button_busqueda.grid(column=1, row=5)
 
 window.mainloop()
