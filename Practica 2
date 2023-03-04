@@ -1,0 +1,65 @@
+from tkinter import *
+import tkinter.scrolledtext as scrolledtext
+from tkinter import filedialog
+import string, random
+import os
+
+
+def inicia():
+    iniciador(ruta_Carpeta, ruta_CarpetaCopia)
+
+def iniciador(ruta_Carpeta, ruta_CarpetaCopia):
+    with os.scandir(ruta_Carpeta) as contenidos:
+        for elemento in contenidos:
+            if os.path.isfile(os.path.join(ruta_Carpeta, elemento)):
+                procesoArchivo(elemento, ruta_CarpetaCopia)
+            else:
+                if elemento.name != 'ArchivosCopia':
+                    nueva_ruta = ruta_Carpeta + '/' + elemento.name  
+                    nueva_ruta_Copia = ruta_CarpetaCopia + elemento.name + '/'
+                    archivos(nueva_ruta, nueva_ruta_Copia)        
+
+def archivos(nueva_ruta, nueva_ruta_Copia):
+    os.makedirs(nueva_ruta_Copia, exist_ok=True)
+    iniciador(nueva_ruta, nueva_ruta_Copia)
+
+def save_file_at_dir(dir_path, filename, file_content, mode='w'):
+    os.makedirs(dir_path, exist_ok=True)
+    with open(os.path.join(dir_path, filename), mode) as f:
+        f.write(file_content)
+
+def procesoArchivo(elemento , ruta_CarpetaCopia):
+    with open(elemento, "r") as archivo:
+        almacen = ''
+        fragmento = ''
+        for linea in archivo:
+            for caracter in linea:
+                fragmento = fragmento + caracter
+                if (caracter.isalnum()):
+                    if (caracter.isnumeric()):
+                        rand = random.choice(string.ascii_letters)
+                    else:
+                        rand = random.randint(1, 9)
+                    almacen = almacen + str(rand).upper()
+                else:
+                    almacen = almacen + caracter
+        save_file_at_dir(ruta_CarpetaCopia, elemento.name , almacen)
+
+def buscadorCarpetas():
+    global ruta_Carpeta, ruta_CarpetaCopia
+    ruta_Carpeta = filedialog.askdirectory(initialdir="/", title="Select a File")
+    ruta_CarpetaCopia = '/Users/Victor/Desktop/ArchivosCopia/'
+    os.makedirs(ruta_CarpetaCopia, exist_ok=True)
+
+window = Tk()
+window.title('File Explorer')
+window.geometry("740x400")
+window.config(background="white")
+
+label_file_explorer = Label(window, text="Práctica 02", width=100, height=2, fg="blue").grid(column=1, row=1)
+button_explore = Button(window, text="Iniciar archivos", command=inicia).grid(column=1, row=2)
+button_exit = Button(window, text="Salir", command=exit).grid(column=1, row=3)
+button_busqueda = Button(window, text="Seleccionar carpeta", command=buscadorCarpetas).grid(column=1, row=4)
+scrolledtext.ScrolledText(window, height=6, width=90, bg="light cyan").grid(column=1, row=5)
+
+window.mainloop()
